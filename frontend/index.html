@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinkTree Clone</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding-top: 70px; /* Adjust padding for fixed navbar */
+            padding-bottom: 20px;
+            background-image: url('./bg.jpeg'); /* Replace 'your_background_image.jpg' with the URL or path to your background image */
+            background-size: cover; /* Cover the entire viewport */
+            background-position: center; /* Center the background image */
+            background-repeat: no-repeat; /* Do not repeat the background image */
+        }
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+        .card {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        button[type="submit"] {
+            width: 100%;
+        }
+        .message {
+            margin-top: 10px;
+            text-align: center;
+            display: none;
+        }
+        .input-invalid {
+            border-color: red !important;
+        }
+        .input-valid {
+            border-color: green !important;
+        }
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+        .error-shake {
+            animation: shake 0.5s ease;
+        }
+        /* Style for circular image */
+        .navbar-brand img {
+            width: 50px; /* Set the size of the image */
+            height: 50px;
+            border-radius: 50%; /* Make it circular */
+            overflow: hidden; /* Ensure it's not distorted */
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <!-- Replace the text with an image -->
+        <a class="navbar-brand" href="#"><img src="./logo.jpeg" alt="Logo"></a>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-body">
+            <!-- Replace the text with an image -->
+            <!-- <h5 class="card-title text-center">LinkTree Clone</h5> -->
+            <h5 class="card-title text-center"><img src="./tanjiro-is-the-smartest-character-in-kny-in-terms-of-battle-v0-zgw97cfcwezb1.jpg.webp" alt="Logo" style="width: 100px; height: 100px; border-radius: 50%;"></h5>
+            <form id="userForm">
+                <div class="form-group">
+                    <label for="stellarId" class="form-label">Stellar ID</label>
+                    <input type="text" class="form-control" id="stellarId" placeholder="Enter your Stellar ID">
+                </div>
+                <div class="form-group">
+                    <label for="instaId" class="form-label">Instagram ID</label>
+                    <input type="text" class="form-control" id="instaId" placeholder="Enter your Instagram ID">
+                </div>
+                <div class="form-group">
+                    <label for="discordId" class="form-label">Discord ID</label>
+                    <input type="text" class="form-control" id="discordId" placeholder="Enter your Discord ID">
+                </div>
+                <div class="form-group">
+                    <label for="linkedinId" class="form-label">LinkedIn ID</label>
+                    <input type="text" class="form-control" id="linkedinId" placeholder="Enter your LinkedIn ID">
+                </div>
+                <div class="form-group">
+                    <label for="twitterId" class="form-label">Twitter ID</label>
+                    <input type="text" class="form-control" id="twitterId" placeholder="Enter your Twitter ID">
+                </div>
+                <button type="submit" class="btn btn-primary">Add User</button>
+            </form>
+            <div class="message" id="successMessage">User information stored successfully!</div>
+            <div class="message text-danger" id="errorMessage">Failed to add user. Please try again later.</div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Add event listener to the form submission event
+    document.getElementById('userForm').addEventListener('submit', function(event) {
+        // Prevent the default form submission
+        event.preventDefault();
+
+        // Retrieve the data entered by the user from the form fields
+        const stellarId = document.getElementById('stellarId').value;
+        const instaId = document.getElementById('instaId').value;
+        const discordId = document.getElementById('discordId').value;
+        const linkedinId = document.getElementById('linkedinId').value;
+        const twitterId = document.getElementById('twitterId').value;
+
+        // Call the backend function to interact with the Soroban smart contract
+        addUser(stellarId, instaId, discordId, linkedinId, twitterId);
+    });
+
+    // Function to add user to the Soroban smart contract
+    async function addUser(stellarId, instaId, discordId, linkedinId, twitterId) {
+        // Clear previous error messages and input validation classes
+        document.getElementById('successMessage').style.display = 'none';
+        document.getElementById('errorMessage').style.display = 'none';
+        document.getElementById('stellarId').classList.remove('input-invalid', 'input-valid');
+        document.getElementById('instaId').classList.remove('input-invalid', 'input-valid');
+        document.getElementById('discordId').classList.remove('input-invalid', 'input-valid');
+        document.getElementById('linkedinId').classList.remove('input-invalid', 'input-valid');
+        document.getElementById('twitterId').classList.remove('input-invalid', 'input-valid');
+
+        // Validate input fields
+        const validInput = validateInput(stellarId, instaId, discordId, linkedinId, twitterId);
+        if (!validInput) return;
+
+        const contractId = 'CAPEBRG6Z3YNDLOTZHTAZEF7TAUKTF27B627HBIZGALFETJDCEQQCWOQ'; // Replace with your Soroban contract
+        ID
+        const endpoint = `https://soroban-testnet.stellar.org/contracts/${contractId}/add_user`;
+
+        const requestBody = {
+            stellarId: stellarId,
+            instaId: instaId,
+            discordId: discordId,
+            linkedinId: linkedinId,
+            twitterId: twitterId
+        };
+
+        try {
+            const response = await fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestBody)
+            });
+
+            if (response.ok) {
+                // Show success message
+                document.getElementById('successMessage').style.display = 'block';
+            } else {
+                // Show error message
+                document.getElementById('errorMessage').style.display = 'block';
+            }
+        } catch (error) {
+            console.error('Error adding user:', error);
+            // Show error message
+            document.getElementById('errorMessage').style.display = 'block';
+        }
+    }
+
+    // Function to validate input fields
+    function validateInput(stellarId, instaId, discordId, linkedinId, twitterId) {
+        let isValid = true;
+        if (stellarId.trim() === '') {
+            document.getElementById('stellarId').classList.add('input-invalid');
+            isValid = false;
+        } else {
+            document.getElementById('stellarId').classList.add('input-valid');
+        }
+        if (instaId.trim() === '') {
+            document.getElementById('instaId').classList.add('input-invalid');
+            isValid = false;
+        } else {
+            document.getElementById('instaId').classList.add('input-valid');
+        }
+        if (discordId.trim() === '') {
+            document.getElementById('discordId').classList.add('input-invalid');
+            isValid = false;
+        } else {
+            document.getElementById('discordId').classList.add('input-valid');
+        }
+        if (linkedinId.trim() === '') {
+            document.getElementById('linkedinId').classList.add('input-invalid');
+            isValid = false;
+        } else {
+            document.getElementById('linkedinId').classList.add('input-valid');
+        }
+        if (twitterId.trim() === '') {
+            document.getElementById('twitterId').classList.add('input-invalid');
+            isValid = false;
+        } else {
+            document.getElementById('twitterId').classList.add('input-valid');
+        }
+        return isValid;
+    }
+</script>
+</body>
+</html>
